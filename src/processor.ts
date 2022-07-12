@@ -48,6 +48,11 @@ const processor = new SubstrateBatchProcessor()
       kanaria.events["PlotsBought(uint256[],address,address,bool)"].topic,
     ],
   })
+  .addEvmLog(contractKanariaNew.address, {
+    filter: [
+      kanariaNew.events["PlotsBought(uint256[],address,address,bool)"].topic,
+    ],
+  })
   .addEvmLog(contractRMRK.address, {
     filter: [
       rmrk.events["Transfer(address,address,uint256)"].topic,

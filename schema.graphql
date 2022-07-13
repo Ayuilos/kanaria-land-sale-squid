@@ -24,6 +24,7 @@ type Sale @entity {
 }
 
 type PlotOperationRecord @entity {
+  id: ID!
   plot: Plot!
   txHash: String!
   block: Int!

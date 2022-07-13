@@ -414,7 +414,7 @@ async function saveEntities(
     // if no
     if (!operation) {
       operation = new PlotOperationRecord({
-        id: plotOperationTransaction.plotId,
+        id: plotOperationTransaction.txHash,
         plot: (await ctx.store.get(Plot, plotId)) ?? plots.get(plotId),
         price: price ? price.toBigInt() : null,
         operator: (await ctx.store.get(Buyer, seller)) ?? buyers.get(seller),

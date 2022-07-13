@@ -2,6 +2,7 @@ type Buyer @entity {
   id: ID! # buyer
   ownedPlots: [Plot!]! @derivedFrom(field: "buyer")
   sales: [Sale!]! @derivedFrom(field: "buyer")
+  plorOperationRecords: [PlotOperationRecord!]! @derivedFrom(field: "operator")
 }
 
 type Referrer @entity {
@@ -22,10 +23,26 @@ type Sale @entity {
   block: Int!
 }
 
+type PlotOperationRecord @entity {
+  plot: Plot!
+  txHash: String!
+  block: Int!
+  timestamp: BigInt!
+  # type: LIST, CHANGE_PRICE, CANCEL, FULFILL, TRANSFER
+  type: String!
+  operator: Buyer!
+  # when `type` is TRANSFER, `receiver` is set
+  receiver: Buyer
+  # when `type` is [LIST, CHANGE_PRICE, FULFILL], `price` is set
+  price: BigInt
+}
+
 type Plot @entity {
   id: ID!
   plotId: BigInt!
   buyer: Buyer!
   referrer: Referrer!
   sale: Sale!
+  # will set when this plot has bid
+  operationRecords: [PlotOperationRecord!]! @derivedFrom(field: "plot")
 }

@@ -1,8 +1,9 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Buyer} from "./buyer.model"
 import {Referrer} from "./referrer.model"
 import {Sale} from "./sale.model"
+import {PlotOperationRecord} from "./plotOperationRecord.model"
 
 @Entity_()
 export class Plot {
@@ -27,4 +28,7 @@ export class Plot {
   @Index_()
   @ManyToOne_(() => Sale, {nullable: false})
   sale!: Sale
+
+  @OneToMany_(() => PlotOperationRecord, e => e.plot)
+  operationRecords!: PlotOperationRecord[]
 }

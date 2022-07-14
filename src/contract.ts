@@ -3,10 +3,16 @@ import * as kanaria from "./abi/kanaria";
 import * as kanariaNew from "./abi/kanariaNew";
 import * as rmrk from "./abi/rmrk";
 
-export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
+export const CHAIN_NODE = "wss://moonriver-rpc.dwellir.com";
+export const FOR_FETCH_LAND_DATA_NODE =
+  "wss://moonriver.blastapi.io/85537306-e2b1-48a5-8842-58940c31b184";
+
+const oldLandSaleContractAddr = "0x98AF019Cdf16990130CBA555861046B02e9898cC";
+const newLandSaleContractAddr = "0x913a3E067a559Ba24A7a06a6CDEa4837EEEAF72d";
+const xcRMRKContractAddr = "0xffffffFF893264794d9d57E1E0E21E0042aF5A0A";
 
 export const contractKanaria = new ethers.Contract(
-  "0x98AF019Cdf16990130CBA555861046B02e9898cC".toLowerCase(),
+  oldLandSaleContractAddr.toLowerCase(),
   kanaria.abi,
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
@@ -15,12 +21,19 @@ export const contractKanaria = new ethers.Contract(
 // The Land Sale Contract will migrate to new Contract on `11th July 2022 16:00 CET`
 
 export const contractKanariaNew = new ethers.Contract(
-  "0x913a3E067a559Ba24A7a06a6CDEa4837EEEAF72d".toLowerCase(),
+  newLandSaleContractAddr.toLowerCase(),
   kanariaNew.abi,
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
+
+export const contractKanariaNewForRPC = new ethers.Contract(
+  newLandSaleContractAddr.toLowerCase(),
+  kanariaNew.abi,
+  new ethers.providers.WebSocketProvider(FOR_FETCH_LAND_DATA_NODE)
+);
+
 export const contractRMRK = new ethers.Contract(
-  "0xffffffFF893264794d9d57E1E0E21E0042aF5A0A".toLowerCase(),
+  xcRMRKContractAddr.toLowerCase(),
   rmrk.abi,
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );

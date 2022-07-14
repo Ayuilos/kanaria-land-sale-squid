@@ -30,6 +30,7 @@ type PlotOperationRecord @entity {
   block: Int!
   timestamp: BigInt!
   # type: LIST, CHANGE_PRICE, CANCEL, FULFILL, TRANSFER
+  # choose `String!` cause codegen doesn't support enum well
   type: String!
   operator: Buyer!
   # when `type` is TRANSFER, `receiver` is set
@@ -38,12 +39,31 @@ type PlotOperationRecord @entity {
   price: BigInt
 }
 
+type PlotData {
+  cyber: Int!
+  steampunk: Int!
+  wind: Int!
+  volcano: Int!
+  fire: Int!
+  water: Int!
+  necro: Int!
+  mecha: Int!
+  dragon: Int!
+  meadow: Int!
+  isShore: Int! # 0 = no, 1 = yes
+  isIsland: Int! # 0 = mainland, 1 = island
+  isMountainFoot: Int! # 0 = no, 1 = yes
+  rarity: Int!
+  entropy: Int!
+}
+
 type Plot @entity {
   id: ID!
   plotId: BigInt!
   buyer: Buyer!
   referrer: Referrer!
   sale: Sale!
-  # will set when this plot has bid
+  data: PlotData!
+  # will set when this plot has bid or transfer
   operationRecords: [PlotOperationRecord!]! @derivedFrom(field: "plot")
 }

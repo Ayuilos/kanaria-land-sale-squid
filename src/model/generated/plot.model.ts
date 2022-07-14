@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 import {Buyer} from "./buyer.model"
 import {Referrer} from "./referrer.model"
 import {Sale} from "./sale.model"
+import {PlotData} from "./_plotData"
 import {PlotOperationRecord} from "./plotOperationRecord.model"
 
 @Entity_()
@@ -28,6 +29,9 @@ export class Plot {
   @Index_()
   @ManyToOne_(() => Sale, {nullable: false})
   sale!: Sale
+
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new PlotData(undefined, marshal.nonNull(obj))}, nullable: false})
+  data!: PlotData
 
   @OneToMany_(() => PlotOperationRecord, e => e.plot)
   operationRecords!: PlotOperationRecord[]

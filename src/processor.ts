@@ -13,12 +13,21 @@ import {
   CHAIN_NODE,
   contractKanaria,
   contractKanariaNew,
+  contractKanariaNewForRPC,
   contractRMRK,
 } from "./contract";
 import * as rmrk from "./abi/rmrk";
 import * as kanaria from "./abi/kanaria";
 import * as kanariaNew from "./abi/kanariaNew";
-import { Buyer, Referrer, Sale, Plot, PlotOperationRecord } from "./model";
+import {
+  Buyer,
+  Referrer,
+  Sale,
+  Plot,
+  PlotOperationRecord,
+  PlotData,
+} from "./model";
+import { concurrentFetch } from "./utils";
 
 // types and interfaces
 type Item = BatchProcessorItem<typeof processor>;
@@ -345,6 +354,60 @@ async function saveEntities(
     }
   }
 
+  // get plot data
+  const pIds = [...saleTransactions.values()].reduce((_pIds, trans) => {
+    _pIds.push(...trans.plotIds);
+
+    return _pIds;
+  }, [] as BigNumber[]);
+  const plotDatas = await concurrentFetch({
+    fetcher: contractKanariaNewForRPC.functions.getPlotData,
+    data: pIds,
+    dataResolver: (_data) => {
+      const {
+        cyber,
+        steampunk,
+        wind,
+        volcano,
+        fire,
+        water,
+        necro,
+        mecha,
+        dragon,
+        meadow,
+        isShore,
+        isIsland,
+        isMountainFoot,
+        rarity,
+        entropy,
+      } = _data[0];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return new PlotData({
+        cyber,
+        steampunk,
+        wind,
+        volcano,
+        fire,
+        water,
+        necro,
+        mecha,
+        dragon,
+        meadow,
+        isShore,
+        isIsland,
+        isMountainFoot,
+        rarity,
+        entropy,
+      });
+    },
+  });
+  const plotDataMap = new Map(
+    pIds.map((pId, i) => {
+      return [pId, plotDatas[i]];
+    })
+  );
+
   // for each saleTransaction, create relevant entities
   for (const saleTransaction of saleTransactions.values()) {
     // create Buyer
@@ -394,6 +457,7 @@ async function saveEntities(
           buyer,
           referrer,
           sale,
+          data: plotDataMap.get(plotId),
         });
       }
       plots.set(plot.id, plot);

@@ -1,5 +1,5 @@
-module.exports = class Init1657724718264 {
-  name = 'Init1657724718264'
+module.exports = class Init1657775828396 {
+  name = 'Init1657775828396'
 
   async up(db) {
     await db.query(`CREATE TABLE "sale" ("id" character varying NOT NULL, "tx_hash" text NOT NULL, "amount" numeric NOT NULL, "bought_with_credits" boolean NOT NULL, "timestamp" numeric NOT NULL, "block" integer NOT NULL, "buyer_id" character varying NOT NULL, "referrer_id" character varying NOT NULL, CONSTRAINT "PK_d03891c457cbcd22974732b5de2" PRIMARY KEY ("id"))`)
@@ -10,7 +10,7 @@ module.exports = class Init1657724718264 {
     await db.query(`CREATE INDEX "IDX_f630eb732964b68e85318f4090" ON "plot_operation_record" ("plot_id") `)
     await db.query(`CREATE INDEX "IDX_830e82c0fd0034604088c35c77" ON "plot_operation_record" ("operator_id") `)
     await db.query(`CREATE INDEX "IDX_1d87a905b9f1339c13761ece8c" ON "plot_operation_record" ("receiver_id") `)
-    await db.query(`CREATE TABLE "plot" ("id" character varying NOT NULL, "plot_id" numeric NOT NULL, "buyer_id" character varying NOT NULL, "referrer_id" character varying NOT NULL, "sale_id" character varying NOT NULL, CONSTRAINT "PK_7c22bdc3280a3a5610c63159883" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "plot" ("id" character varying NOT NULL, "plot_id" numeric NOT NULL, "data" jsonb NOT NULL, "buyer_id" character varying NOT NULL, "referrer_id" character varying NOT NULL, "sale_id" character varying NOT NULL, CONSTRAINT "PK_7c22bdc3280a3a5610c63159883" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_941e6f8e227f6123eca097dd7d" ON "plot" ("buyer_id") `)
     await db.query(`CREATE INDEX "IDX_ac0a37eb18459786d1d72c58bf" ON "plot" ("referrer_id") `)
     await db.query(`CREATE INDEX "IDX_08cb1005b49aba2c3a6375bc19" ON "plot" ("sale_id") `)

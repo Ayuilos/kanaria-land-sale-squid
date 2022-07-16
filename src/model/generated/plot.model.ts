@@ -33,6 +33,12 @@ export class Plot {
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new PlotData(undefined, marshal.nonNull(obj))}, nullable: false})
   data!: PlotData
 
+  @Column_("int4", {nullable: false})
+  lastModifiedBlock!: number
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  lastModifiedTime!: bigint
+
   @OneToMany_(() => PlotOperationRecord, e => e.plot)
   operationRecords!: PlotOperationRecord[]
 }

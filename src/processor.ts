@@ -8,6 +8,7 @@ import {
 } from "@subsquid/substrate-processor";
 import { BigNumber } from "ethers";
 import { EventItem } from "@subsquid/substrate-processor/lib/interfaces/dataSelection";
+import { EntityManager } from "typeorm";
 
 import {
   CHAIN_NODE,
@@ -116,7 +117,7 @@ async function processBatches(ctx: Context) {
           item.event.args.address === contractKanariaNew.address
         ) {
           handlePlotsBoughtEvents(item, saleTransactions, block.header);
-          handlePlotsListingEvents(
+          handlePlotsModifiedEvents(
             item,
             plotOperationTransactions,
             block.header
@@ -169,7 +170,7 @@ function handlePlotsBoughtEvents(
   }
 }
 
-function handlePlotsListingEvents(
+function handlePlotsModifiedEvents(
   item: EventItem<"EVM.Log", true>,
   plotOperationTransactions: Map<string, PlotOperationTransaction>,
   blockHeader: SubstrateBlock
@@ -457,6 +458,8 @@ async function saveEntities(
           buyer,
           referrer,
           sale,
+          lastModifiedBlock: sale.block,
+          lastModifiedTime: sale.timestamp,
           data: plotDataMap.get(plotId),
         });
       }
@@ -477,11 +480,14 @@ async function saveEntities(
     let operation = await ctx.store.get(PlotOperationRecord, plotId);
     // if no
     if (!operation) {
+      const plotInDB = await ctx.store.get(Plot, plotId);
+      const plot = (plotInDB ?? plots.get(plotId))!;
+
       operation = new PlotOperationRecord({
         id: plotOperationTransaction.txHash,
-        plot: (await ctx.store.get(Plot, plotId)) ?? plots.get(plotId),
+        plot,
         price: price ? price.toBigInt() : null,
-        operator: (await ctx.store.get(Buyer, seller)) ?? buyers.get(seller),
+        operator: ((await ctx.store.get(Buyer, seller)) ?? buyers.get(seller))!,
         receiver: buyer
           ? (await ctx.store.get(Buyer, buyer)) ?? buyers.get(buyer)
           : null,
@@ -490,6 +496,30 @@ async function saveEntities(
         txHash,
         type,
       });
+
+      // if this operation was newer than plot is recording, update plot's record
+      if (plot && plot.lastModifiedBlock < operation.block) {
+        const updatedData = {
+          lastModifiedBlock: operation.block,
+          lastModifiedTime: operation.timestamp,
+        };
+        // if in db, just update it
+        if (plotInDB) {
+          // add @ts-ignore here to use private variable forcely
+          // to avoid build error which will stop docker running
+
+          // @ts-ignore
+          await ctx.store.em().then((em: EntityManager) => {
+            return em.update(Plot, plotId, updatedData);
+          });
+        } else {
+          // if not, update it in map
+          Object.assign(plot, updatedData);
+
+          plots.set(plotId, plot);
+        }
+      }
+
       plotOperationRecords.set(operation.id, operation);
     }
   }

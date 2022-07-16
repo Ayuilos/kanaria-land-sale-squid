@@ -64,6 +64,9 @@ type Plot @entity {
   referrer: Referrer!
   sale: Sale!
   data: PlotData!
+  # first be set by land sale
+  lastModifiedBlock: Int!
+  lastModifiedTime: BigInt!
   # will set when this plot has bid or transfer
   operationRecords: [PlotOperationRecord!]! @derivedFrom(field: "plot")
 }

@@ -4,6 +4,7 @@ import * as kanariaNew from "./abi/kanariaNew";
 import * as rmrk from "./abi/rmrk";
 
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
+export const FOR_FREQUENT_RPC_INVOKE_NODE = "wss://moonriver.blastapi.io/85537306-e2b1-48a5-8842-58940c31b184";
 
 const oldLandSaleContractAddr = "0x98AF019Cdf16990130CBA555861046B02e9898cC";
 const newLandSaleContractAddr = "0x913a3E067a559Ba24A7a06a6CDEa4837EEEAF72d";
@@ -27,7 +28,7 @@ export const contractKanariaNew = new ethers.Contract(
 export const contractKanariaNewForRPC = new ethers.Contract(
   newLandSaleContractAddr.toLowerCase(),
   kanariaNew.abi,
-  new ethers.providers.WebSocketProvider(CHAIN_NODE)
+  new ethers.providers.WebSocketProvider(FOR_FREQUENT_RPC_INVOKE_NODE)
 );
 
 export const contractRMRK = new ethers.Contract(

@@ -9,7 +9,7 @@ export async function concurrentFetch<D, M, R>({
   fetcher,
   data,
   dataResolver = (_data) => _data,
-  limit = 20,
+  limit = 12,
 }: ConcurrentFetchConfig<D, M, R>): Promise<(M | R)[]> {
   let pointer = 0;
   const queue = [];

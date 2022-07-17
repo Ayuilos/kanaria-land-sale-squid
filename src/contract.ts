@@ -4,6 +4,8 @@ import * as kanariaNew from "./abi/kanariaNew";
 import * as rmrk from "./abi/rmrk";
 
 export const CHAIN_NODE = "wss://wss.api.moonriver.moonbeam.network";
+
+// work well locally but not work well on subsquid cloud, so just leave it here for future use
 export const FOR_FREQUENT_RPC_INVOKE_NODE = "wss://moonriver.blastapi.io/85537306-e2b1-48a5-8842-58940c31b184";
 
 const oldLandSaleContractAddr = "0x98AF019Cdf16990130CBA555861046B02e9898cC";
@@ -28,7 +30,7 @@ export const contractKanariaNew = new ethers.Contract(
 export const contractKanariaNewForRPC = new ethers.Contract(
   newLandSaleContractAddr.toLowerCase(),
   kanariaNew.abi,
-  new ethers.providers.WebSocketProvider(FOR_FREQUENT_RPC_INVOKE_NODE)
+  new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
 
 export const contractRMRK = new ethers.Contract(

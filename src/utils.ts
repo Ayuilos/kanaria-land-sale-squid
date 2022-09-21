@@ -49,7 +49,7 @@ export function getArgs(
   ev:
     | EvmLogEvent
     | (Omit<EvmLogEvent, "args"> & { args: { log: EvmLogEvent["args"] } })
-): EvmEvent {
+): any {
   if ("log" in ev.args) {
     return ev.args.log;
   }

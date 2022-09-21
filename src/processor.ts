@@ -28,7 +28,7 @@ import {
   PlotOperationRecord,
   PlotData,
 } from "./model";
-import { concurrentFetch, getTopic } from "./utils";
+import { concurrentFetch, getArgs, getTopic } from "./utils";
 
 // types and interfaces
 type Item = BatchProcessorItem<typeof processor>;
@@ -112,9 +112,11 @@ async function processBatches(ctx: Context) {
     for (const item of block.items) {
       if (item.name === "EVM.Log") {
         // create a saleTransaction for each PlotsBought event log, and populate the map
+        const args = getArgs(item.event);
+
         if (
-          item.event.args.address === contractKanaria.address ||
-          item.event.args.address === contractKanariaNew.address
+          args.address === contractKanaria.address ||
+          args.address === contractKanariaNew.address
         ) {
           handlePlotsBoughtEvents(item, saleTransactions, block.header);
           handlePlotsModifiedEvents(
@@ -124,7 +126,7 @@ async function processBatches(ctx: Context) {
           );
         }
         // create a transferTransaction for each RMRK Transfer event log, and populate the map
-        else if (item.event.args.address === contractRMRK.address) {
+        else if (args.address === contractRMRK.address) {
           handleXcRMRKTransferEvents(item, transferTransactions);
         }
       }
@@ -150,7 +152,7 @@ function handlePlotsBoughtEvents(
   const targetEvent = eventsList.find((event) => event.topic === topic);
 
   if (targetEvent) {
-    const bought = targetEvent.decode(item.event.args);
+    const bought = targetEvent.decode(getArgs(item.event));
     const saleTransaction = {
       txHash,
       buyer: bought.buyer,
@@ -195,11 +197,13 @@ function handlePlotsModifiedEvents(
   const targetEvent = eventsList.find((event) => event.topic === topic);
 
   if (targetEvent) {
+    const eArgs = getArgs(item.event);
+
     switch (targetEvent.topic) {
       case eventsList[0].topic: {
         const args = (
           targetEvent as GetTargetEvent<"PlotListed(uint256,address,uint256)">
-        ).decode(item.event.args);
+        ).decode(eArgs);
         const plotId = args.plotId.toString();
         const { seller, price } = args;
 
@@ -217,7 +221,7 @@ function handlePlotsModifiedEvents(
       case eventsList[1].topic: {
         const args = (
           targetEvent as GetTargetEvent<"PlotPriceChanged(uint256,address,uint256,uint256)">
-        ).decode(item.event.args);
+        ).decode(eArgs);
         const plotId = args.plotId.toString();
         const { seller, newPrice } = args;
 
@@ -235,7 +239,7 @@ function handlePlotsModifiedEvents(
       case eventsList[2].topic: {
         const args = (
           targetEvent as GetTargetEvent<"PlotDelisted(uint256,address)">
-        ).decode(item.event.args);
+        ).decode(eArgs);
         const plotId = args.plotId.toString();
         const { seller } = args;
 
@@ -252,7 +256,7 @@ function handlePlotsModifiedEvents(
       case eventsList[3].topic: {
         const args = (
           targetEvent as GetTargetEvent<"PlotPurchased(uint256,address,address,uint256)">
-        ).decode(item.event.args);
+        ).decode(eArgs);
         const plotId = args.plotId.toString();
         const { price, seller, buyer } = args;
 
@@ -271,7 +275,7 @@ function handlePlotsModifiedEvents(
       case eventsList[4].topic: {
         const args = (
           targetEvent as GetTargetEvent<"PlotTransferred(uint256,address,address)">
-        ).decode(item.event.args);
+        ).decode(eArgs);
         const { plotIds: plotId, oldOwner, newOwner } = args;
 
         plotOperationTransactions.set(txHash, {
@@ -296,13 +300,12 @@ function handleXcRMRKTransferEvents(
   transferTransactions: Map<string, TransferTransaction>
 ) {
   const txHash = item.event.evmTxHash;
+  const args = getArgs(item.event);
+  const topic = args.topic;
 
-  if (
-    item.event.args.topics[0] ===
-    rmrk.events["Transfer(address,address,uint256)"].topic
-  ) {
+  if (topic === rmrk.events["Transfer(address,address,uint256)"].topic) {
     const transfer = rmrk.events["Transfer(address,address,uint256)"].decode(
-      item.event.args
+      args
     );
     if (!transferTransactions.has(txHash)) {
       const transferTransaction = {

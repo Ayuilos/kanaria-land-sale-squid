@@ -38,6 +38,9 @@ export const contractKanariaNew = new ethers.Contract(
 // });
 
 // const httpsProvider = new ethers.providers.Web3Provider(web3Provider);
+
+// wss works well, no need to use proxy and no blocking by gov
+// const httpsProvider = new ethers.providers.WebSocketProvider(FOR_FREQUENT_RPC_INVOKE_NODE);
 const httpsProvider = new ethers.providers.JsonRpcProvider(HTTPS_CHAIN_NODE);
 
 export const contractKanariaNewForRPC = new ethers.Contract(

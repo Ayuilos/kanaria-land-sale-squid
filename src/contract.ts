@@ -1,4 +1,6 @@
 import { ethers } from "ethers";
+import Web3HttpProvider from "web3-providers-http";
+import ProxyAgent from "proxy-agent";
 import * as kanaria from "./abi/kanaria";
 import * as kanariaNew from "./abi/kanariaNew";
 import * as rmrk from "./abi/rmrk";
@@ -28,6 +30,14 @@ export const contractKanariaNew = new ethers.Contract(
   new ethers.providers.WebSocketProvider(CHAIN_NODE)
 );
 
+// Set proxy when local dev
+// const proxyAgent = new ProxyAgent("http://127.0.0.1:8889");
+
+// const web3Provider = new Web3HttpProvider("https://moonriver.blastapi.io/f0ea5a0b-6d61-4e3f-8656-f42d27f03e7f", {
+//   agent: { http: proxyAgent, https: proxyAgent },
+// });
+
+// const httpsProvider = new ethers.providers.Web3Provider(web3Provider);
 const httpsProvider = new ethers.providers.JsonRpcProvider(HTTPS_CHAIN_NODE);
 
 export const contractKanariaNewForRPC = new ethers.Contract(

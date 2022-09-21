@@ -1,3 +1,6 @@
+import { EvmLogEvent } from "@subsquid/substrate-processor";
+import { EvmEvent } from "./abi/rmrk";
+
 interface ConcurrentFetchConfig<D, M, R> {
   fetcher: (data: D) => Promise<M>;
   data: D[];
@@ -39,4 +42,21 @@ export async function concurrentFetch<D, M, R>({
   }
 
   return result.flat();
+}
+
+// There is a problem, that typings do not match what is currently returned, so we have to check log property
+export function getArgs(
+  ev:
+    | EvmLogEvent
+    | (Omit<EvmLogEvent, "args"> & { args: { log: EvmLogEvent["args"] } })
+): EvmEvent {
+  if ("log" in ev.args) {
+    return ev.args.log;
+  }
+
+  return ev.args;
+}
+
+export function getTopic(ev: EvmLogEvent): string {
+  return getArgs(ev).topics[0];
 }

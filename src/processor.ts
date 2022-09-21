@@ -28,7 +28,7 @@ import {
   PlotOperationRecord,
   PlotData,
 } from "./model";
-import { concurrentFetch } from "./utils";
+import { concurrentFetch, getTopic } from "./utils";
 
 // types and interfaces
 type Item = BatchProcessorItem<typeof processor>;
@@ -142,7 +142,7 @@ function handlePlotsBoughtEvents(
 ) {
   const { height, timestamp } = blockHeader;
   const txHash = item.event.evmTxHash;
-  const topic = item.event.args.topics[0];
+  const topic = getTopic(item.event);
   const eventsList = [
     kanaria.events["PlotsBought(uint256[],address,address,bool)"],
     kanariaNew.events["PlotsBought(uint256[],address,address,bool)"],
@@ -177,7 +177,7 @@ function handlePlotsModifiedEvents(
 ) {
   const { height, timestamp } = blockHeader;
   const txHash = item.event.evmTxHash;
-  const topic = item.event.args.topics[0];
+  const topic = getTopic(item.event);
 
   const eventsList: GetTargetEvent<
     | "PlotListed(uint256,address,uint256)"

@@ -1,6 +1,6 @@
 type Buyer @entity {
   id: ID! # buyer
-  ownedPlots: [Plot!]! @derivedFrom(field: "buyer")
+  ownedPlots: [Plot!]! @derivedFrom(field: "owner")
   sales: [Sale!]! @derivedFrom(field: "buyer")
   plorOperationRecords: [PlotOperationRecord!]! @derivedFrom(field: "operator")
 }
@@ -61,6 +61,7 @@ type Plot @entity {
   id: ID!
   plotId: BigInt!
   buyer: Buyer!
+  owner: Buyer!
   referrer: Referrer!
   sale: Sale!
   data: PlotData!

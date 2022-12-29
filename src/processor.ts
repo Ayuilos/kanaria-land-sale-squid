@@ -304,9 +304,8 @@ function handleXcRMRKTransferEvents(
   const topic = args.topic;
 
   if (topic === rmrk.events["Transfer(address,address,uint256)"].topic) {
-    const transfer = rmrk.events["Transfer(address,address,uint256)"].decode(
-      args
-    );
+    const transfer =
+      rmrk.events["Transfer(address,address,uint256)"].decode(args);
     if (!transferTransactions.has(txHash)) {
       const transferTransaction = {
         txHash,
@@ -459,6 +458,7 @@ async function saveEntities(
           id: plotId.toString(),
           plotId: plotId.toBigInt(),
           buyer,
+          owner: buyer,
           referrer,
           sale,
           lastModifiedBlock: sale.block,
@@ -502,25 +502,28 @@ async function saveEntities(
 
       // if this operation was newer than plot is recording, update plot's record
       if (plot && plot.lastModifiedBlock < operation.block) {
-        const updatedData = {
+        const updatedData: Partial<Plot> = {
           lastModifiedBlock: operation.block,
           lastModifiedTime: operation.timestamp,
         };
+        if (operation.receiver) {
+          updatedData.owner = operation.receiver;
+        }
         // if in db, just update it
-        if (plotInDB) {
-          // add @ts-ignore here to use private variable forcely
-          // to avoid build error which will stop docker running
+        // if (plotInDB) {
+        //   // add @ts-ignore here to use private variable forcely
+        //   // to avoid build error which will stop docker running
 
-          // @ts-ignore
-          await ctx.store.em().then((em: EntityManager) => {
-            return em.update(Plot, plotId, updatedData);
-          });
-        } else {
+        //   // @ts-ignore
+        //   await ctx.store.em().then((em: EntityManager) => {
+        //     return em.update(Plot, plotId, updatedData);
+        //   });
+        // } else {
           // if not, update it in map
           Object.assign(plot, updatedData);
 
           plots.set(plotId, plot);
-        }
+        // }
       }
 
       plotOperationRecords.set(operation.id, operation);

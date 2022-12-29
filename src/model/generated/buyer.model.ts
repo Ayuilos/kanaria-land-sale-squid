@@ -5,19 +5,19 @@ import {PlotOperationRecord} from "./plotOperationRecord.model"
 
 @Entity_()
 export class Buyer {
-  constructor(props?: Partial<Buyer>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Buyer>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @OneToMany_(() => Plot, e => e.buyer)
-  ownedPlots!: Plot[]
+    @OneToMany_(() => Plot, e => e.owner)
+    ownedPlots!: Plot[]
 
-  @OneToMany_(() => Sale, e => e.buyer)
-  sales!: Sale[]
+    @OneToMany_(() => Sale, e => e.buyer)
+    sales!: Sale[]
 
-  @OneToMany_(() => PlotOperationRecord, e => e.operator)
-  plorOperationRecords!: PlotOperationRecord[]
+    @OneToMany_(() => PlotOperationRecord, e => e.operator)
+    plorOperationRecords!: PlotOperationRecord[]
 }

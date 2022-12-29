@@ -6,36 +6,36 @@ import {Referrer} from "./referrer.model"
 
 @Entity_()
 export class Sale {
-  constructor(props?: Partial<Sale>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Sale>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("text", {nullable: false})
-  txHash!: string
+    @Column_("text", {nullable: false})
+    txHash!: string
 
-  @OneToMany_(() => Plot, e => e.sale)
-  plots!: Plot[]
+    @OneToMany_(() => Plot, e => e.sale)
+    plots!: Plot[]
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  amount!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    amount!: bigint
 
-  @Index_()
-  @ManyToOne_(() => Buyer, {nullable: false})
-  buyer!: Buyer
+    @Index_()
+    @ManyToOne_(() => Buyer, {nullable: true})
+    buyer!: Buyer
 
-  @Index_()
-  @ManyToOne_(() => Referrer, {nullable: false})
-  referrer!: Referrer
+    @Index_()
+    @ManyToOne_(() => Referrer, {nullable: true})
+    referrer!: Referrer
 
-  @Column_("bool", {nullable: false})
-  boughtWithCredits!: boolean
+    @Column_("bool", {nullable: false})
+    boughtWithCredits!: boolean
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  timestamp!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    timestamp!: bigint
 
-  @Column_("int4", {nullable: false})
-  block!: number
+    @Column_("int4", {nullable: false})
+    block!: number
 }

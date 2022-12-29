@@ -8,37 +8,41 @@ import {PlotOperationRecord} from "./plotOperationRecord.model"
 
 @Entity_()
 export class Plot {
-  constructor(props?: Partial<Plot>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Plot>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  plotId!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    plotId!: bigint
 
-  @Index_()
-  @ManyToOne_(() => Buyer, {nullable: false})
-  buyer!: Buyer
+    @Index_()
+    @ManyToOne_(() => Buyer, {nullable: true})
+    buyer!: Buyer
 
-  @Index_()
-  @ManyToOne_(() => Referrer, {nullable: false})
-  referrer!: Referrer
+    @Index_()
+    @ManyToOne_(() => Buyer, {nullable: true})
+    owner!: Buyer
 
-  @Index_()
-  @ManyToOne_(() => Sale, {nullable: false})
-  sale!: Sale
+    @Index_()
+    @ManyToOne_(() => Referrer, {nullable: true})
+    referrer!: Referrer
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new PlotData(undefined, marshal.nonNull(obj))}, nullable: false})
-  data!: PlotData
+    @Index_()
+    @ManyToOne_(() => Sale, {nullable: true})
+    sale!: Sale
 
-  @Column_("int4", {nullable: false})
-  lastModifiedBlock!: number
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new PlotData(undefined, obj)}, nullable: false})
+    data!: PlotData
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  lastModifiedTime!: bigint
+    @Column_("int4", {nullable: false})
+    lastModifiedBlock!: number
 
-  @OneToMany_(() => PlotOperationRecord, e => e.plot)
-  operationRecords!: PlotOperationRecord[]
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    lastModifiedTime!: bigint
+
+    @OneToMany_(() => PlotOperationRecord, e => e.plot)
+    operationRecords!: PlotOperationRecord[]
 }

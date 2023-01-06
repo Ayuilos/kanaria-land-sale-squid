@@ -346,14 +346,7 @@ async function saveEntities(
 
   async function setSecondMarketUserAsBuyer(buyer = "") {
     if (!(await ctx.store.get(Buyer, buyer))) {
-      if (!buyers.get(buyer)) {
-        buyers.set(
-          buyer,
-          new Buyer({
-            id: buyer,
-          })
-        );
-      }
+      await ctx.store.insert(new Buyer({ id: buyer }));
     }
   }
 
@@ -510,20 +503,20 @@ async function saveEntities(
           updatedData.owner = operation.receiver;
         }
         // if in db, just update it
-        // if (plotInDB) {
-        //   // add @ts-ignore here to use private variable forcely
-        //   // to avoid build error which will stop docker running
+        if (plotInDB) {
+          // add @ts-ignore here to use private variable forcely
+          // to avoid build error which will stop docker running
 
-        //   // @ts-ignore
-        //   await ctx.store.em().then((em: EntityManager) => {
-        //     return em.update(Plot, plotId, updatedData);
-        //   });
-        // } else {
+          // @ts-ignore
+          await ctx.store.em().then((em: EntityManager) => {
+            return em.update(Plot, plotId, updatedData);
+          });
+        } else {
           // if not, update it in map
           Object.assign(plot, updatedData);
 
           plots.set(plotId, plot);
-        // }
+        }
       }
 
       plotOperationRecords.set(operation.id, operation);
